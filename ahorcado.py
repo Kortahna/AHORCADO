@@ -4,27 +4,36 @@ import random
 import os, sys
 from tkinter import Menu
 
+def sustitucion(eleccion_juego, lista_letras):
+    print("\n" + "Adivina la palabra" + "\n")
+    for i in range(0, len(eleccion_juego)):
+        if eleccion_juego[i] in lista_letras:
+            print(eleccion_juego[i], end=" ")
+        else:
+            print("_", end=" ")
+    print("\n")
+
 
 def juego():
     vidas = 5
     eleccion_juego = leerarchivo()
+    lista_letras = []
     os.system("cls")
-    print("Adivina la palabra" + "\n")
-    for i in range(1, len(eleccion_juego)):
-        print("_", end=" ")
-    print("\n")
-    letra_elegida = input("Ingresa una letra: ")
-    
-    for a in eleccion_juego:
-        if a == letra_elegida:
-            os.system("cls")
-            vidas = vidas - 1
-    if vidas == 0:
-        respuesta = input("¿De qué palabra se trata?")
-        if respuesta == eleccion_juego:
-            print("Efectivamente, ¡HAS GANADO!")
+    print(eleccion_juego)
+    # print(len(eleccion_juego))
+    while vidas > 0:
+        sustitucion(eleccion_juego,lista_letras)
+        letra_elegida = input("Ingresa una letra: " + "\n")
+        lista_letras.append(letra_elegida)
+        vidas -= 1
+        os.system("cls")
+    else:
+        sustitucion(eleccion_juego,lista_letras)
+        respuesta = input("¿De qué palabra se trata?" + "\n")
+        if respuesta.lower() == eleccion_juego:
+            print("\n" + "Efectivamente, ¡HAS GANADO!")
         else:
-            print("Oh no! Esa no es la palabra, lo siento, prueba de nuevo")   
+            print("\n" + "Oh no! Esa no es la palabra, lo siento, has perdido")    
 
 
 # Leo el archivo data y lo convierto en una lista para Python
@@ -50,7 +59,7 @@ def run():
     perderás. Pero tranquilo, podrás volver a jugar.
 
     Empezamos:
-    (Presiona cualquier letra o pulsa enter para continuar)
+    (Presiona cualquier letra)
     
     """
 
