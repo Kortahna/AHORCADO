@@ -4,36 +4,38 @@ import random
 import os, sys
 from tkinter import Menu
 
+
+#En esta funcion hacemos que python no diferencie entre vocales con tilde o sin ellas
+def normalize(s):
+    replacements = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+    )
+    for a, b in replacements:
+        s = s.replace(a, b).replace(a.upper(), b.upper())
+    return s
+
+
+#En esta función le comentamos al jugador que ha ganado y cerramos el juego
+def ganar(eleccion_juego):
+    print("\n" + "Efectivamente es " + eleccion_juego + ", ¡HAS GANADO!" + "\U0001F917")
+    sys.exit()
+
+
+#En esta función sustituimo las _ por las letras de la palabra y viceversa
 def sustitucion(eleccion_juego, lista_letras):
-    print("\n" + "Adivina la palabra" + "\n")
+    print("\n" + ":::::::::::::::::::::::::" + "\n")
+    print("Adivina la palabra:" + "\n")
+    print("")
     for i in range(0, len(eleccion_juego)):
         if eleccion_juego[i] in lista_letras:
             print(eleccion_juego[i], end=" ")
         else:
             print("_", end=" ")
     print("\n")
-
-
-def juego():
-    vidas = 5
-    eleccion_juego = leerarchivo()
-    lista_letras = []
-    os.system("cls")
-    print(eleccion_juego)
-    # print(len(eleccion_juego))
-    while vidas > 0:
-        sustitucion(eleccion_juego,lista_letras)
-        letra_elegida = input("Ingresa una letra: " + "\n")
-        lista_letras.append(letra_elegida)
-        vidas -= 1
-        os.system("cls")
-    else:
-        sustitucion(eleccion_juego,lista_letras)
-        respuesta = input("¿De qué palabra se trata?" + "\n")
-        if respuesta.lower() == eleccion_juego:
-            print("\n" + "Efectivamente, ¡HAS GANADO!")
-        else:
-            print("\n" + "Oh no! Esa no es la palabra, lo siento, has perdido")    
 
 
 # Leo el archivo data y lo convierto en una lista para Python
@@ -48,7 +50,47 @@ def leerarchivo():
     return eleccion_juego
 
 
+#Aquí definimos el funcionamiento principal del juego, los turnos, la limpieza de pantalla, controlamos los errores principales, etc.
+def juego():
+    turnos = 5
+    eleccion_juego = normalize(leerarchivo())
+    lista_letras = []
+    os.system("cls")
+    # print(eleccion_juego)
+    # print(len(eleccion_juego))
+    while turnos > 0:
+        sustitucion(eleccion_juego,lista_letras)
+        letra_elegida = normalize(input("Ingresa una letra: " + "\n" + "\n" + ":::::::::::::::::::::::::" + "\n" + "\n"))
+        try:
+            if letra_elegida.isnumeric() or letra_elegida == "" or letra_elegida == " ":
+                raise ValueError("No se admiten números, ni espacios en blanco o falta de carácteres" + "\n")
+            if letra_elegida in lista_letras:
+                print("\n" + "Esta letra ya la has usado, prueba con otra" + "\n")
+            else:
+                lista_letras.append(letra_elegida)
+                turnos -= 1
+                recorrido = True
+                for i in eleccion_juego:
+                    if i not in lista_letras:
+                        recorrido = False
+                        break
+                if recorrido:
+                    ganar(eleccion_juego)    
+                os.system("cls")
+        except ValueError as ve:
+            print(ve)
+    else:
+        sustitucion(eleccion_juego,lista_letras)
+        respuesta = input("¿De qué palabra se trata?" + "\n")
+        if normalize(respuesta.lower()) == eleccion_juego:
+            ganar(eleccion_juego)
+        else:
+            print("\n" + "Oh no! Esa no es la palabra, lo siento, has perdido, la palabra era: " + eleccion_juego)
+
+
 def run():
+
+    contador = 10
 
     menu = """
     
@@ -59,13 +101,12 @@ def run():
     perderás. Pero tranquilo, podrás volver a jugar.
 
     Empezamos:
-    (Presiona cualquier letra)
+    (Presiona cualquier letra y luego enter)
     
     """
 
     if input(menu):
-        juego()
-        
+        juego()   
 
 
 if __name__ == '__main__':
